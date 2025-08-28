@@ -33,7 +33,7 @@ Notes:
 
 Mesh visualization with the fallback matplotlib renderer may take ~20 seconds even after the meshes are generated.
 Meshes are generated quickly (~2 seconds).
-Point clouds are generated in the output folder even before mesh rendering finishes.
+Point clouds are generated in the output folder before mesh rendering finishes.
 
 Training
 Preprocess the dataset (ModelNet10) with Halton sequences:
