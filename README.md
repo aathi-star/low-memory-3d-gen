@@ -5,6 +5,7 @@ This repository contains the official implementation of our research paper, curr
 Clone the repository:
 
 git clone https://github.com/aathi-star/low-memory-3d-gen.git
+
 cd low-memory-3d-gen
 
 Generating Point Clouds and Meshes
@@ -55,7 +56,9 @@ We also acknowledge the open-source community and prior works on point cloud gen
 which served as an inspiration for this research.
 
 Citation
+
 If you use this code, please cite our paper (citation details will be added once published).
 
 Contact
+
 For questions or collaboration, please open an issue in this repository.
