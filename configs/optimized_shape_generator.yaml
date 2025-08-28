@@ -1,0 +1,147 @@
+# ModelNet10 3D Shape Generator Configuration (NO TEXT CONDITIONING)
+# Optimized Configuration for Exact ModelNet10 Shape Resemblance
+# Pure 3D shape generation without any text prompting or conditioning
+
+data:
+  dataset_path: "data"
+  cache_preprocessed: true
+
+model:
+  num_points: 2048                # Number of points in generated point clouds
+  use_halton: true                # Enable Halton sequence sampling for better point distribution
+  use_graph_attention: true       # Enable graph attention networks for better shape coherence
+  latent_dim: 256                 # Dimension of latent space
+  use_progressive_generation: true # Use progressive generation (coarse-to-fine)
+
+halton:
+  scale: 0.9                      # Scale factor for Halton points
+  center: true                    # Center Halton points
+  noise_scale: 0.05               # Small noise for natural variation
+  jitter: 0.02                    # Jitter for more natural point distribution
+
+graph_attention:
+  num_heads: 8                    # Number of attention heads
+  num_layers: 4                   # Number of graph attention layers
+  hidden_dim: 128                 # Hidden dimension for graph networks
+  dropout: 0.1                    # Dropout rate
+  k_neighbors: 20                 # Number of neighbors for graph construction
+  edge_features: true             # Use edge features in graph attention
+  residual_connections: true      # Use residual connections for better gradient flow
+  category_conditioning: true      # Condition graph networks on category
+
+training:
+  batch_size: 32
+  num_epochs: 200                 # More epochs for better convergence
+  learning_rate: 0.001
+  weight_decay: 1e-5
+  # Advanced learning rate scheduler
+  use_cosine_lr: true             # Use cosine annealing with warm restarts
+  cosine_lr_min: 1.0e-6           # Minimum learning rate for cosine scheduler
+  cosine_t_max: 30                # T_max for cosine annealing
+  cosine_restarts: 5              # Number of warm restarts
+  # Checkpointing
+  checkpoint_dir: "checkpoints/shape_generator"
+  resume_checkpoint: null         # Path to checkpoint for resuming training
+  save_best_only: true            # Only save best model based on validation
+  checkpoint_interval: 5          # Save checkpoint every N epochs
+  # Logging and visualization
+  log_interval: 10                # How often to log training progress
+  sample_interval: 5              # How often to generate samples during training
+  use_tensorboard: true           # Use TensorBoard for monitoring
+  log_dir: "logs/shape_generator" # TensorBoard log directory
+  # Data loading
+  num_workers: 4                  # Number of data loading workers
+  persistent_workers: true        # Keep workers alive between epochs
+  pin_memory: true                # Pin memory for faster data transfer to GPU
+  drop_last: true                 # Drop last incomplete batch
+  # Advanced training techniques
+  use_mixed_precision: true       # Use automatic mixed precision training
+  use_ema: true                   # Use exponential moving average model
+  ema_decay: 0.995                # EMA decay rate (higher = more stable)
+  grad_clip_norm: 1.0             # Clip gradients by norm for stability
+  # Optimizer settings
+  optimizer: "adamw"              # Use AdamW optimizer (better than Adam)
+  adam_beta1: 0.9                 # Beta1 parameter for Adam/AdamW
+  adam_beta2: 0.999               # Beta2 parameter for Adam/AdamW
+  adam_eps: 1.0e-8                # Epsilon parameter for Adam/AdamW
+  # Loss functions
+  use_shape_prior: true           # Use shape prior for better ModelNet10 resemblance
+  shape_prior_weight: 0.15        # Weight of shape prior loss
+  chamfer_weight: 1.0             # Weight of chamfer distance loss
+  normal_consistency_weight: 0.1  # Weight of normal consistency loss
+  uniform_density_weight: 0.1     # Weight for uniform point density loss
+  feature_consistency_weight: 0.2 # Weight for feature consistency loss
+  category_fidelity_weight: 0.3   # Weight for category fidelity loss
+  multi_view_consistency_weight: 0.15 # Weight for multi-view consistency
+  # Early stopping
+  early_stopping: true            # Enable early stopping
+  patience: 15                    # Patience for early stopping
+  min_delta: 0.0001               # Minimum change to qualify as improvement
+
+generation:
+  # NO TEXT CONDITIONING - This pipeline operates without any text prompts
+  text_conditioning_enabled: false  # Explicitly disable any text conditioning
+  
+  # Output settings
+  output_dir: "output/generated_shapes"
+  export_formats: ["obj", "ply", "npy"]  # Export formats for generated shapes
+  # Generation parameters
+  inference_steps: 50             # Number of refinement steps during generation
+  temperature: 0.7                # Sampling temperature (lower = more deterministic, better quality)
+  ensemble_generation: true       # Use ensemble of models for higher quality
+  # Template guidance
+  use_template_guidance: true     # Use ModelNet10 templates for guidance
+  template_influence: 0.3         # How much influence templates have
+  progressive_refinement: true    # Use progressive refinement (coarse-to-fine)
+  progressive_steps: 3            # Number of progressive refinement steps
+  # Category-specific settings
+  category_correction: true       # Apply category-specific geometric corrections
+  category_features: true         # Use category-specific feature extractors
+  category_specific_priors: true  # Use category-specific priors
+  # Advanced post-processing
+  apply_post_processing: true     # Apply advanced post-processing
+  multi_view_consistency: true    # Apply multi-view consistency check
+  consistency_threshold: 0.85     # Threshold for multi-view consistency
+  uniform_distribution: true      # Force uniform point distribution
+  smooth_normals: true            # Smooth normals for better mesh export
+  # Halton sequence application
+  use_halton_generation: true     # Use Halton sequence for point distribution
+  halton_dimensions: 3            # Number of Halton sequence dimensions
+  halton_seed: 42                 # Seed for Halton sequence reproducibility
+  # Feature-based refinement
+  use_pretrained_features: true   # Use pretrained feature extractors
+  feature_weight: 0.4             # Weight of feature consistency in generation
+  feature_model: "pointnet2"     # Feature extraction model to use
+
+visualization:
+  # Visualization during training/generation
+  show_examples: true             # Show examples during training
+  render_method: "point_cloud"    # Rendering method (point_cloud, mesh)
+  render_point_size: 2.0          # Point size for rendering
+  colormap: "viridis"             # Colormap for point cloud visualization
+  # Feature visualization
+  feature_viz: true               # Generate t-SNE visualizations of features
+  feature_viz_interval: 10        # Interval for feature visualization
+  # Export options
+  save_screenshots: true          # Save screenshots of visualizations
+  screenshot_resolution: [1200, 1200]  # Resolution for screenshots
+  # Advanced rendering
+  use_normal_shading: true        # Use normal information for shading
+  ambient_occlusion: true         # Apply ambient occlusion for better visuals
+  background_color: [0.95, 0.95, 1.0]  # Light blue background
+  # Animation
+  create_turntable: true          # Create turntable animations of models
+  turntable_frames: 60            # Number of frames in turntable animation
+
+pretraining:
+  # Pretrained components
+  use_pretrained: true            # Use pretrained components
+  backbone: "pointnet2"           # Backbone model for feature extraction
+  freeze_backbone: true           # Freeze backbone during training
+  pretrained_weights: null        # Path to custom pretrained weights (if null, use default)
+  # Transfer learning
+  feature_adaptation: true        # Adapt pretrained features for ModelNet10
+  adaptation_layers: 2            # Number of adaptation layers
+  # Extra training for pretrained components
+  finetune_backbone: false        # Finetune backbone during later epochs
+  finetune_after_epoch: 50        # Start finetuning after this epoch

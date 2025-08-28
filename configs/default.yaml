@@ -1,0 +1,67 @@
+# Default configuration for Text-to-3D model
+
+# Model configuration
+model:
+  output_type: 'point_cloud'  # 'point_cloud' or 'mesh'
+  # Resolution options - higher values increase quality but also training time
+  # Standard resolution: 2048 points (baseline, ~2-4 hours training)
+  # High resolution: 4096 points (~1.5x training time)
+  # Ultra resolution: 8192 points (~2.5x training time)
+  num_points: 4096  # Number of points in point cloud output
+  num_vertices: 1000  # Number of vertices for mesh output (if using mesh)
+  num_faces: 2000  # Number of faces for mesh output (if using mesh)
+  num_shape_features: 64  # Number of shape features for graph attention
+  
+  # Progressive generation settings
+  progressive_generation: true  # Enable progressive generation for higher quality
+  
+  # LoRA optimization settings
+  lora:
+    enabled: true  # Whether to use LoRA adapters for parameter-efficient fine-tuning
+    rank: 4  # Rank of LoRA adapters (smaller = less parameters)
+    alpha: 16  # Alpha scaling for LoRA
+    dropout: 0.05  # Dropout rate for LoRA layers
+
+# Training configuration
+training:
+  batch_size: 32
+  num_epochs: 100
+  learning_rate: 0.0002
+  weight_decay: 0.0001
+  gradient_clip_val: 1.0
+  early_stopping_patience: 10
+  
+  # AWS ml.g5.12xlarge-specific optimizations
+  num_workers: 16  # For data loading
+  mixed_precision: true  # Use mixed precision training
+  gradient_accumulation_steps: 4  # Accumulate gradients for larger effective batch size
+  distributed_training: true  # Use distributed training across GPUs
+  num_gpus: 4  # Number of GPUs on ml.g5.12xlarge
+  
+  # Low-resource optimizations
+  use_lora: true  # Use LoRA adapters for efficient fine-tuning
+  use_progressive_generation: true  # Use progressive generation
+  use_quantization_for_inference: true  # Use model quantization for inference
+
+# Dataset configuration
+dataset:
+  data_dir: 'data/processed'
+  use_halton_sampling: true  # Use Halton sampling for point clouds
+  augmentation:
+    rotation: true
+    scaling: true
+    jittering: true
+  
+# Logging configuration
+logging:
+  log_dir: 'logs'
+  save_dir: 'checkpoints'
+  log_interval: 10  # Log every N batches
+  eval_interval: 1  # Evaluate every N epochs
+  save_interval: 1  # Save checkpoints every N epochs
+  use_wandb: true  # Use Weights & Biases for logging
+
+# Generation configuration
+generation:
+  temperature: 0.8  # Temperature for sampling
+  num_candidates: 5  # Number of candidates to generate and select from
