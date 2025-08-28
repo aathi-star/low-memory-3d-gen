@@ -8,6 +8,10 @@ git clone https://github.com/aathi-star/low-memory-3d-gen.git
 
 cd low-memory-3d-gen
 
+install dependencies:
+
+pip install requirements.txt
+
 Generating Point Clouds and Meshes
 
 python generate.py \
